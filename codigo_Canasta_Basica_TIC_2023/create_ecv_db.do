@@ -626,12 +626,52 @@ save `GatosHogares', replace
 
 
 
-
 /*====================================================================================================
-              10: Juntar Bases de datos temporales 
+              10: Datos ubicación de la las caracteristicas y composicion del hogar 
 ====================================================================================================*/
 
-*----------10.1: se juntan las bases de datos temporales 
+tempfile Hogar
+
+*----------10.1: importar datos
+
+use "$original/Caracteristicas y composicion del hogar/Caracteristicas y composicion del hogar.DTA",clear
+
+*----------10.2: Generar variables para el analisis de la composicion del hogar 
+/* Descripcion
+Se crean unas variables que identifican las observaciones de las personas que son menores de edad, adultos [18,60] y de la tercera edad (mayores de 60)
+se crea una variable que identifica a las personas que son pareja del jefe del hogar 
+se crea una variable que identifica a las personas que son jefe de hogar y mujeres
+se crea una variable que identifica a las mujeres 
+*/
+gen MenoresEdad = P6040<18
+gen  Adultos =  P6040>=18 & P6040<=60
+gen TerceraEdad = P6040>60
+gen Pareja = P6051==2
+gen JefeMujer = (P6051==1 & P6020==2)
+gen Mujer = P6020==2
+
+
+*----------10.3: Se renombran las variables de la secuencia de la emcuesta 
+drop SECUENCIA_ENCUESTA
+rename SECUENCIA_P SECUENCIA_ENCUESTA
+
+
+*----------10.4: Se agrupan los datos por hogar, con la suma de las variables generadas
+collapse (sum) Pareja MenoresEdad Adultos TerceraEdad JefeMujer Mujer, by(DIRECTORIO SECUENCIA_ENCUESTA)
+
+
+*----------10.5: guardar base de datos preliminar  
+save `Hogar', replace
+
+
+
+
+
+/*====================================================================================================
+              11: Juntar Bases de datos temporales 
+====================================================================================================*/
+
+*----------11.1: se juntan las bases de datos temporales 
 
 use `Datos_Vivienda', clear
 
@@ -649,8 +689,10 @@ merge 1:m DIRECTORIO SECUENCIA_ENCUESTA using `TenenciaVivienda', nogen
 
 merge 1:m DIRECTORIO SECUENCIA_ENCUESTA using `GatosHogares', nogen
 
+merge 1:m DIRECTORIO SECUENCIA_ENCUESTA using `Hogar', nogen
 
-*----------10.2: se crean las variables de ingresos y gastos totales, asi como las variables de ahorro y proporciones 
+
+*----------11.2: se crean las variables de ingresos y gastos totales, asi como las variables de ahorro y proporciones 
 
 
 * gastos totales, suma de todos los gastos 
@@ -693,6 +735,14 @@ gen Proporcion_GastosTICIngresos = GastosTIC/Ingresos
 gen Proporcion_GastosIngresos = GastosTotales/Ingresos
 
 
+* se genera la variable de los deciles de ingresos según ingresos del DANE
+egen Decil_Ingresos_ECV = cut(I_HOGAR), group(10)
+
+* se genera la variable de los deciles de ingresos según ingresos generados 
+egen Decil_Ingresos = cut(Ingresos), group(10)
+
+
+*----------11.2: se guarda la base de datos final
 save "$working/ECV_Ingresos_Gastos.dta",replace 
 
 
