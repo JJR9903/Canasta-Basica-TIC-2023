@@ -149,8 +149,7 @@ foreach var in P8551 P3176 P3178S1A1 P3178S2A1 P3178S3A1 P3179S1A1 P3179S2A1 P31
 Además se transforman los costos para que sean mensuales, dividiendo por la frecuencia del pago que es anual
 */
 
-
-foreach var in P3187S2 P3188S1A1 P3188S2A1 P3188S3A1 {
+foreach var in P3187S2 P3188S1A1 P3188S2A1 P3188S3A1 P3189S1A1 P3189S2A1 {
 	replace `var'=`var'/12
 }
 
@@ -451,7 +450,7 @@ Se decide transformar estos missings en cero (0) porque, lo que se quiere saber 
 */
 
 *P5140
-foreach var in P5100 P3198 P5610 P8693 P5130 P5650{
+foreach var in P5100 P3198 P5610 P8693 P5140 P5650{
 	replace `var'=0 if `var'==.
 	replace `var'=0 if `var'==99
 }
@@ -478,7 +477,7 @@ ej: G_V_Arriendo
 */
 	
 	
-rename (P5100 P3198 P5610 P8693 P5130 P5650) (G_V_Amortizacion G_V_Seguros G_V_Predial G_V_Valorizacion G_V_Arriendo G_V_Administracion)
+rename (P5100 P3198 P5610 P8693 P5140 P5650) (G_V_Amortizacion G_V_Seguros G_V_Predial G_V_Valorizacion G_V_Arriendo G_V_Administracion)
 
 rename FEX_C FEX_C_HOGAR
 
@@ -551,6 +550,8 @@ replace P3204S1= P3204S1*1 if P3204>=36 & P3204<=67  // gastos mensuales x1
 replace P3204S1= P3204S1/3 if P3204>=68 & P3204<=77  // gastos trimestrales /3
 replace P3204S1= P3204S1/12 if P3204>=78 // gastos anuales /12
 
+replace P3204S1= P3204S1/4 if P3204>=78 & P3204<=93  // gastos anuales que suceden cada 4 años, gastos en tecnología, carros, motos, muebles, neveras, 
+replace P3204S1= P3204S1/4 if P3204==42  // gastos anuales que suceden cada 4 años, reparacion carro 
 
 *----------9.5: se crea la variable tipo de gasto, agrupacion de los gastos del hogar
 
