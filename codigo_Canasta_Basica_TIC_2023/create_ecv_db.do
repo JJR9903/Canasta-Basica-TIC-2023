@@ -8,10 +8,10 @@ url:
 Dependencies:  Econometría Consultores
 ----------------------------------------------------
 Creation Date:    13 Sep 2023 - 14:27:23
-Modification Date:   
-Do-file version:    01
+Modification Date:   20 Sep 2023
+Do-file version:    02
 References: ECV 2022, DANE         
-Output:             
+Output:  ECV_Ingresos_Gastos.dta    
 ==================================================*/
 
 /*==================================================
